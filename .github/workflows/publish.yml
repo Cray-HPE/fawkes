@@ -1,0 +1,54 @@
+name: Publish Docs to Github Pages
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: self-hosted-small
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - name: Install Antora and the Antora Lunr Extension
+      run: npm i antora @antora/lunr-extension
+
+    - name: Fetch antora-ui bundle
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        repo: 'Cray-HPE/antora-ui'
+        file: 'ui-bundle.zip'
+
+    - name: Move ui-bundle.zip
+      run: |
+        mkdir antora-ui
+        cp ui-bundle.zip antora-ui/ui-bundle.zip
+
+    - name: Generate Site
+      working-directory: ./docs-site
+      env:
+        GIT_CREDENTIALS: https://${{ secrets.GITHUB_TOKEN }}@github.com
+      run: npx antora antora-playbook.yml
+
+    - name: Upload GitHub Pages artifact
+      uses: actions/upload-pages-artifact@v1.0.9
+      with:
+        path: docs-site/build/site
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: https://cray-hpe.github.io/docs-fawkes
+    permissions:
+      pages: write
+      id-token: write
+    runs-on: self-hosted-small
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2

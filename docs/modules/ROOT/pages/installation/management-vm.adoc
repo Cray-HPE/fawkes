@@ -1,0 +1,112 @@
+= Management VM
+
+Welcome to the hypervisor. To get started you will need to deploy a management VM. The management VM is an ephemeral VM
+that is used to deploy the rest of the system.
+
+At this point we assume that the first hypervisor has been installed and rebooted into the system.
+
+[source,bash]
+----
+crucible network interface --dhcp virbr0 --members bond0
+crucible network interface --dhcp virbr1 --members bond0.cmn0
+----
+
+SSH into the first hypervisor.
+
+[source,bash]
+----
+ssh root@hypervisor-01
+----
+
+Copy the management VM image from the Live CD into the appropriate location.
+TODO: These can probably stay on the Live CD and just be imported later?
+[source,bash]
+----
+mkdir -p /vms/images
+cp /mnt/livecd/images/management-vm*.qcow2 /vms/images/
+----
+
+Create a storage pool to hold the volume
+TODO: Do we even need to do this?
+
+[source,bash]
+----
+virsh pool-define-as management-pool dir --target /var/lib/libvirt/management-pool
+virsh pool-build management-pool
+virsh pool-start management-pool
+virsh pool-autostart management-pool
+----
+
+Next we need to ensure that the management VM boots with the appropriate data. To do this we will create a set of
+cloud init data.
+
+.file: `meta-data.yml`
+[source,yaml]
+----
+instance-id: management-vm
+local-hostname: management-vm
+----
+
+.file: `user-data.yml`
+[source,yaml]
+----
+#cloud-config
+users:
+  - default
+  - name: admin
+    groups: users,wheel
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - "ssh-rsa supersecurepublickey root@hypervisor"
+----
+
+Cloud init is pulled from an ISO that will be attached to the management VM. Let's create that ISO.
+
+TODO: There are other ways to make this, which has the least requirements?
+
+[source,bash]
+----
+mkdir -p /vms/cloud-init/management-vm
+xorriso -as genisoimage \
+    -output /vms/cloud-init/management-vm/cloud-init.iso \
+    -volid CIDATA -joliet -rock \
+    /vms/cloud-init/management-vm/user-data.yml \
+    /vms/cloud-init/management-vm/meta-data.yml
+genisoimage -output /vms/cloud-init/management-vm/cloud-init.iso \
+    -volid cidata -joliet -rock \
+    /vms/cloud-init/management-vm/user-data.yml \
+    /vms/cloud-init/management-vm/meta-data.yml
+mkisofs -output /vms/cloud-init/management-vm/cloud-init.iso \
+    -volid cidata -joliet -rock \
+    /vms/cloud-init/management-vm/user-data.yml \
+    /vms/cloud-init/management-vm/meta-data.yml
+----
+
+Now that we have an ISO, we're ready to create and boot the VM. The first step is importing the volumes so that libvirt
+can make use of them.
+
+[source,bash]
+----
+virsh vol-create-as --pool management-pool --name management-vm.qcow2 --capacity 20G --format qcow2
+qemu-img resize /vms/management-b524b58-1688058055298-x86_64.qcow2 +100G
+virsh vol-upload --pool management-pool management-vm.qcow2 /var/lib/libvirt/images/management-1.6.0-x86_64.qcow2
+virsh vol-upload --pool management-pool management-storage.qcow2 /var/lib/libvirt/images/management-storage.qcow2
+----
+
+To boot the VM, we create a domain with the included domain.xml file.
+The defaults are set to 20 vCPUs and 8GB of memory.
+If you need more resources, edit the domain.xml file and adjust the appropriate sections.
+
+[source,xml]
+----
+<memory unit='MiB'>8192</memory>
+<vcpu>20</vcpu>
+----
+
+[source,bash]
+----
+Boot the VM
+```bash
+virsh create domain.xml
+----
