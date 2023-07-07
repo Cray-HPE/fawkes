@@ -19,7 +19,7 @@ jobs:
 
     - name: Generate Site
       env:
-        GIT_CREDENTIALS='${{ secrets.GITHUB_TOKEN }}'
+        GIT_CREDENTIALS: '${{ secrets.GITHUB_TOKEN }}'
       run: npx antora docs-site/antora-playbook.yml
 
     - name: Publish to GitHub Pages
