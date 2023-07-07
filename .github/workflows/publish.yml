@@ -20,7 +20,7 @@ jobs:
     - name: Generate Site
       env:
         GIT_CREDENTIALS: https://${{ secrets.GITHUB_TOKEN }}@github.com
-      run: npx antora docs-site/antora-playbook.yml
+      run: npx antora antora-playbook.yml
 
     - name: Publish to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3

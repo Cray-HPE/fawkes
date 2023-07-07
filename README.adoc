@@ -1,0 +1,12 @@
+= Fawkes Documentation
+
+This repository provides documentation for the Fawkes project.
+
+== What is "Fawkes"?
+
+image::docs/ROOT/images/fawkes.png[Fawkes]
+
+Fawkes is the name of a Phoenix, a fantastical beast that upon perishing will rise from its ashes anew.
+
+Project Fawkes is a new bare-metal deployment for high-performance computing with the goal of running virtual machines
+across a management cluster in a high-performance computing system.
