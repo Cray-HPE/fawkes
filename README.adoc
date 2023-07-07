@@ -2,7 +2,7 @@
 
 This repository provides documentation for the Fawkes project.
 
-Documentation files are written in AsciiDoc located in _`xref:docs/modules/ROOT[`.
+Documentation files are written in AsciiDoc located in xref:docs/modules/ROOT[`docs/modules/ROOT`].
 
 == What is "Fawkes"?
 
