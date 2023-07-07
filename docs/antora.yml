@@ -3,7 +3,7 @@ title: Fawkes
 name: fawkes
 version: 0.0.1
 prerelease: -alpha.1
-start_page: index.adoc
+start_page: overview.adoc
 asciidoc:
   attributes:
     source-language: asciidoc@

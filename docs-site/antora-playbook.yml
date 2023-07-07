@@ -3,7 +3,7 @@ antora:
   - require: '@antora/lunr-extension'
 site:
   title: Fawkes
-  start_page: fawkes::index.adoc
+  start_page: fawkes::overview.adoc
 content:
   sources:
   - url: ./..

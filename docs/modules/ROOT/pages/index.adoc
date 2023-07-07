@@ -1,4 +1,0 @@
-= Fawkes Project
-:navtitle: Welcome
-
-Welcome to the home page for the Fawkes project!

@@ -1,0 +1,84 @@
+= Hardware and Network Requirements
+:toc:
+:toclevels: 3
+
+
+There are minimum node hardware and network requirements necessary for installation and testing of the Fawkes system.
+
+== Hardware requirements
+
+The Fawkes hypervisor have the following requirements and recommendations for installation and testing.
+
+=== Hypervisor Node Requirements
+
+Hypervisor nodes are home to virtual machines, these require hardware-assisted virtualization and will be home to
+the management and Kubernetes VMs.
+
+.Hypervisor Nodes
+[frame=ends]
+|===
+|Type |Requirements and Recommendations
+
+|CPU
+|x86_64.footnote:support[aarch64 artifacts are not built at this time for hypervisors.] Hardware-assisted virtualization is required.
+8-core processor minimum for testing; 16-core
+or above is recommended for production.
+
+|Memory
+|8 GB minimum for testing; 32 GB or above recommended for production
+
+|Disk Capacity
+|100 GB minimum for testing; 1 TB or above recommended for production
+
+|Disk Quantity
+|1 for testing; 3 or more recommended for production, 2 of which will be used for OS redundancy. The third disk should be larger
+than 1.5 TB for ephemeral, virtual machine storage.
+
+|Disk Performance
+|5,000+ random IOPS per disk(SSD/NVMe). Management nodes (first 3 nodes) must be link:https://www.ibm.com/cloud/blog/using-fio-to-tell-whether-your-storage-is-fast-enough-for-etcd[fast enough for Etcd].
+
+|Network Card
+|1 Gbps Ethernet minimum for testing, at least two 25 Gbps Ethernet for production
+
+|Network Switch
+|Trunking of ports required for VLAN support (IEEE 802.1Q tagging)
+
+|===
+
+=== Storage Node Requirements
+
+Storage nodes play a pivotal role in the deployment of an HPC cluster. These nodes are not deployed as hypervisors and
+do not run any virtualization services other than link:https://podman.io/[Podman].
+
+The current storage solution of choice is link:https://ceph.io/en/[CEPH].
+
+.Storage Nodes
+[frame=ends]
+|===
+|Type |Requirements and Recommendations
+
+|CPU
+|x86_64.footnote:nosupport[aarch64 support is not planned for storage nodes.]. 8-core processor minimum for testing; 16-core
+or above is recommended for production.
+
+|Memory
+|8 GB minimum for testing; 32 GB or above recommended for production
+
+|Disk Capacity
+|100 GB minimum for testing; 4 TB or above recommended for production
+
+|Disk Quantity
+|1 for testing; 8 or more recommended for production, 2 of which will be used for OS redundancy. The remaining disks will be used for the
+storage solution.
+
+|Disk Performance
+|5,000+ random IOPS per disk(SSD/NVMe). Management nodes (first 3 nodes) must be link:https://www.ibm.com/cloud/blog/using-fio-to-tell-whether-your-storage-is-fast-enough-for-etcd[fast enough for Etcd].
+
+|Network Card
+|1 Gbps Ethernet minimum for testing, at least *four* 25 Gbps Ethernet for production
+
+|Network Switch
+|Trunking of ports required for VLAN support (IEEE 802.1Q tagging)
+|===
+
+=== Storage Nodes

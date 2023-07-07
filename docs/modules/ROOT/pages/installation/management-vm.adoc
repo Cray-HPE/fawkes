@@ -1,4 +1,4 @@
-= Deploying the Management VM
+= Management VM
 
 Welcome to the hypervisor. To get started you will need to deploy a management VM. The management VM is an ephemeral VM
 that is used to deploy the rest of the system.
