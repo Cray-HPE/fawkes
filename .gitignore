@@ -1,3 +1,6 @@
+# Antora
+build/
+
 # Logs
 logs
 *.log

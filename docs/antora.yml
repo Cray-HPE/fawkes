@@ -1,0 +1,12 @@
+---
+title: Faweks Docs
+name: fawkes
+version: 0.0.1
+prerelease: -alpha.1
+start_page: index.adoc
+asciidoc:
+  attributes:
+    source-language: asciidoc@
+    table-caption: false
+nav:
+- modules/ROOT/nav.adoc
