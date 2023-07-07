@@ -19,7 +19,7 @@ jobs:
 
     - name: Generate Site
       env:
-        GIT_CREDENTIALS: '${{ secrets.GITHUB_TOKEN }}'
+        GIT_CREDENTIALS: https://${{ secrets.GITHUB_TOKEN }}@github.com/Cray-HPE/docs-fawkes.git
       run: npx antora docs-site/antora-playbook.yml
 
     - name: Publish to GitHub Pages
