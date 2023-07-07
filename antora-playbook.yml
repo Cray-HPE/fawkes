@@ -2,8 +2,8 @@ antora:
   extensions:
   - require: '@antora/lunr-extension'
 site:
-  title: Antora Docs
-  start_page: component-b::index.adoc
+  title: Faweks Docs
+  start_page: component-b::README.adoc
 content:
   sources:
   - url: https://github.com/Cray-HPE/docs-fawkes.git
