@@ -18,6 +18,7 @@ jobs:
       run: npm i antora @antora/lunr-extension
 
     - name: Generate Site
+      working-directory: ./docs-site
       env:
         GIT_CREDENTIALS: https://${{ secrets.GITHUB_TOKEN }}@github.com
       run: npx antora antora-playbook.yml
