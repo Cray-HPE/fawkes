@@ -1,0 +1,28 @@
+antora:
+  extensions:
+  - '@antora/lunr-extension'
+#  - '@antora/pdf-extension'
+site:
+  title: Fawkes
+  start_page: fawkes::index.adoc
+content:
+  sources:
+  - url: https://github.com/Cray-HPE/docs-fawkes.git
+    branches: main
+    tags: [v*]
+  - url: https://github.com/Cray-HPE/crucible.git
+    start_path: docs
+    branches: ~
+    tags: [v*, '!v0.0.1', '!v0.0.2']
+runtime:
+  fetch: true
+asciidoc:
+  attributes:
+    experimental: ''
+    idprefix: ''
+    idseparator: '-'
+    page-pagination: ''
+ui:
+  bundle:
+    url: https://github.com/Cray-HPE/antora-ui/releases/download/1.0.0/ui-bundle.zip
+    snapshot: true

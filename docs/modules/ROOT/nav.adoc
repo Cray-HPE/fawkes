@@ -1,6 +1,0 @@
-* xref:overview.adoc[]
-* Installation
-** xref:installation/hardware-and-network-requirements.adoc[]
-** xref:installation/iso-installation.adoc[]
-** xref:installation/configuration.adoc[]
-** xref:installation/management-vm.adoc[]

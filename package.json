@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@antora/lunr-extension": "^1.0.0-alpha.8",
+    "@antora/pdf-extension": "^1.0.0-alpha.6",
     "antora": "^3.1.4",
     "i": "^0.3.7"
   }

@@ -131,3 +131,11 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+## Ruby Environment normalization:
+Gemfile.lock
+.ruby-version
+.ruby-gemset
+/.bundle/
+/vendor/bundle
+/lib/bundler/man/

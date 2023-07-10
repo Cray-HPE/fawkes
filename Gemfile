@@ -22,9 +22,7 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 
-.PHONY: docs
-docs:
-	npx antora antora-playbook.yml
+source 'https://rubygems.org'
 
-clean:
-	rm -rf build
+gem 'asciidoctor-pdf'
+gem 'rouge'
