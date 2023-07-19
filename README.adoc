@@ -16,3 +16,19 @@ across a management cluster in a high-performance computing system.
 == Resources
 
 For help with AsciiDoc, see link:https://docs.asciidoctor.org/asciidoc/latest/[this quick reference guide].
+
+== Contribution
+
+No documentation exists in this repository, this repository is strictly a site builder.
+
+This repository pulls documentation from other repositories that are defined in `antora-playbook.yml` under the
+`content.sources` key.
+
+To make changes to docs, either:
+
+* Visit link:https://github.com/cray-hpe/docs-fawkes[docs-fawkes] and read its contribution docs.
+* Create a new repository using the link:https://github.com/Cray-HPE/antora-docs-component-template[template] and update this repository's `antora-playbook.yml`.
+
+=== User Interface
+
+The user interface is controlled by link:https://github.com/Cray-HPE/antora-ui[our fork of the Antora UI].
