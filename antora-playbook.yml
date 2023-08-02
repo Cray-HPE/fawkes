@@ -10,13 +10,22 @@ content:
   sources:
   - url: https://github.com/Cray-HPE/docs-fawkes.git
     branches: main
-    tags: [v*]
+    tags: ['{,v}@({0..9}).@({0..9}).@({0..9})*(rc{0..9})']
   - url: https://github.com/Cray-HPE/crucible.git
     start_path: docs
     branches: ~
     tags: ['{,v}@({0..9}).@({0..9}).@({0..9})*(rc{0..9})', '!v0.0.1', '!v0.0.2']
 runtime:
   fetch: true
+urls:
+  latest_version_segment_strategy: redirect:to
+  latest_version_segment: latest
+  # In order for a version be classified as a prerelease, the component must also have at least one non-prerelease
+  # version. If a component only has prerelease versions, the latest version is not classified as a prerelease even
+  # if the prerelease key is set in the component descriptor. When a component only has prerelease versions, then the
+  # value of the latest_version_segment is used instead. This behavior may change in the future.
+  # ref: https://docs.antora.org/antora/3.1/playbook/urls-latest-prerelease-version-segment/
+  latest_prerelease_version_segment: nightly
 asciidoc:
   attributes:
     experimental: ''
