@@ -5,6 +5,7 @@ antora:
 site:
   title: Fawkes
   start_page: fawkes::index.adoc
+  robots: allow
 content:
   sources:
   - url: https://github.com/Cray-HPE/docs-fawkes.git
