@@ -1,5 +1,5 @@
 ---
-root_level: 0
+root_level: 1
 component_versions: '*'
 asciidoc:
   attributes:
