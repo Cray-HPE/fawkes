@@ -1,5 +1,6 @@
 ---
 root_level: 0
+component_versions: '**'
 asciidoc:
   attributes:
       source-highligher: rouge
