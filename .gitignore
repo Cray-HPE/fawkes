@@ -133,7 +133,6 @@ dist
 .pnp.*
 
 ## Ruby Environment normalization:
-Gemfile.lock
 .ruby-version
 .ruby-gemset
 /.bundle/
