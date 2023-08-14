@@ -23,8 +23,13 @@
 #
 
 .PHONY: docs
-docs:
+docs: clean
 	npx antora antora-playbook.yml
 
+.PHONY: clean
 clean:
 	rm -rf build
+
+.PHONY: docs-server
+docs-server: docs
+	./node_modules/.bin/http-server build/site
