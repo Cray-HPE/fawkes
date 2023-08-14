@@ -32,3 +32,15 @@ To make changes to docs, either:
 === User Interface
 
 The user interface is controlled by link:https://github.com/Cray-HPE/antora-ui[our fork of the Antora UI].
+
+=== Local HTTP Server
+
+The `Makefile` has a target for launching a Node.js HTTP server, this is effective for viewing locally generated docs.
+
+[source,bash]
+----
+npm i
+make docs-server
+----
+
+The output will display URLs to find the generated content on `localhost`.
