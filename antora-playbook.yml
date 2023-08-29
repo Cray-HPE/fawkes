@@ -4,7 +4,7 @@ antora:
   - '@antora/pdf-extension'
 site:
   title: Fawkes
-  start_page: fawkes::index.adoc
+  start_page: docs::index.adoc
   robots: allow
 content:
   sources:
