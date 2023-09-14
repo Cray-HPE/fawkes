@@ -39,5 +39,5 @@ asciidoc:
     page-pagination: ''
 ui:
   bundle:
-    url: https://github.com/Cray-HPE/antora-ui/releases/download/1.0.5/ui-bundle.zip
+    url: https://github.com/Cray-HPE/antora-ui/releases/download/1.0.6/ui-bundle.zip
     snapshot: true
