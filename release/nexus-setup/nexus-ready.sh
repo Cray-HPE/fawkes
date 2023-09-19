@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # MIT License
 #
@@ -21,27 +22,15 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
+set -euo pipefail
+NEXUS_DIR="$(dirname "${BASH_SOURCE[0]}")"
+. "${NEXUS_DIR}/../lib/util.sh"
+requires curl
 
-.PHONY: docs
-docs: clean node_modules .bundle
-	npx antora antora-playbook.yml
+URL="${NEXUS_URL:="http://localhost:8081/nexus"}/service/rest"
 
-.PHONY: clean
-clean:
-	rm -rf build
-
-.PHONY: clean-deps
-clean-deps: clean
-	rm -rf .bundle
-	rm -rf node_modules
-
-.PHONY: docs-server
-docs-server: docs
-	./node_modules/.bin/http-server build/site
-
-node_modules:
-	npm i
-
-.bundle:
-	bundle config --local path .bundle/gems
-	bundle
+# Verify Nexus is up
+if ! curl -u "${NEXUS_USERNAME}:${NEXUS_PASSWORD}" -sfk "${URL}/v1/status/writable" >/dev/null 2>&1; then
+    echo >&2 "error: not ready: $NEXUS_URL"
+    exit 1
+fi

@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # MIT License
 #
@@ -21,27 +22,43 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
+set -euo pipefail
 
-.PHONY: docs
-docs: clean node_modules .bundle
-	npx antora antora-playbook.yml
+export SKOPEO_IMAGE='artifactory.algol60.net/csm-docker/stable/quay.io/skopeo/stable:v1'
 
-.PHONY: clean
-clean:
-	rm -rf build
+declare -a podman_run_flags=(--network host)
 
-.PHONY: clean-deps
-clean-deps: clean
-	rm -rf .bundle
-	rm -rf node_modules
+# Prefer to use podman, but for environments with docker
+if [[ "${USE_DOCKER_NOT_PODMAN:-"no"}" == "yes" ]]; then
+    echo >&2 "warning: using docker, not podman"
+    shopt -s expand_aliases
+    alias podman=docker
+fi
 
-.PHONY: docs-server
-docs-server: docs
-	./node_modules/.bin/http-server build/site
+# usage: requires COMMAND [...COMMAND]
+#
+# Verifies that the given space delimited list of commands
+# are in the current PATH.
+function requires() {
+    while [[ $# -gt 0 ]]; do
+        command -v "$1" >/dev/null 2>&1 || {
+            echo >&2 "command not found: ${1}"
+            return 1
+        }
+        shift
+    done
+}
 
-node_modules:
-	npm i
-
-.bundle:
-	bundle config --local path .bundle/gems
-	bundle
+# usage: version
+#
+# Prints the current version
+function version() {
+    local s
+    local v
+    v="$(git describe --tags --match 'v*' | sed -e 's/^v//')"
+    s="$(git status -s)"
+    if [ -n "$s" ]; then
+        v=${v}-dirty
+    fi
+    echo "$v"
+}

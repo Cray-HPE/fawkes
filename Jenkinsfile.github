@@ -1,0 +1,212 @@
+/*
+ *
+ *  MIT License
+ *
+ *  (C) Copyright 2023 Hewlett Packard Enterprise Development LP
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a
+ *  copy of this software and associated documentation files (the "Software"),
+ *  to deal in the Software without restriction, including without limitation
+ *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons to whom the
+ *  Software is furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included
+ *  in all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ *  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *  OTHER DEALINGS IN THE SOFTWARE.
+ *
+ */
+@Library('csm-shared-library') _
+
+def credentialsId = 'artifactory-algol60'
+def sleImage = 'artifactory.algol60.net/csm-docker/stable/csm-docker-sle-python:latest'
+
+def stream
+
+// Only consider v?X.Y.Z tags as stable.
+// Never consider v?X\.Y\.Z(-(alpha|beta|rc)\.\d+) as stable, but don't build anything unless it matches.
+// The ==~ operator performs an exact match.
+def stableToken = ~/v?\d+\.\d+\.\d+/
+def isStable = (env.TAG_NAME != null & env.TAG_NAME ==~ stableToken) ? true : false
+
+// Disable tag-less, or mismatching tag builds.
+def buildToken = ~/v?\d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)/
+if (env.TAG_NAME == null || !(env.TAG_NAME ==~ buildToken)) {
+    currentBuild.result = 'NOT_BUILT'
+    echo "Only tag builds matching the build token are built."
+    return
+// Disable pr-merge builds; not used.
+} else if (env.BRANCH_NAME ==~ ~"^PR-\\d+") {
+    currentBuild.result = 'NOT_BUILT'
+    echo "Pull-Request builds are skipped."
+    return
+// Disable dependabot builds; not useful in Jenkins.
+} else if (env.BRANCH_NAME ==~ ~"^dependabot/") {
+    currentBuild.result = 'NOT_BUILT'
+    echo "Dependabot GitHub actions are skipped."
+    return
+}
+if (isStable) {
+    stream = 'stable'
+} else {
+    stream = 'unstable'
+}
+pipeline {
+
+    agent {
+        label "metal-gcp-builder"
+    }
+
+    options {
+        timeout(time: 240, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    environment {
+        RELEASE_VERSION = sh(script: ". release/lib/util.sh; version", returnStdout: true).trim()
+        RELEASE_NAME = "fawkes"
+        PRIMARY_NODE = "${env.NODE_NAME}"
+        SLACK_CHANNEL_ALERTS = "${env.RELAESE_NAME}-release-alerts"
+        SLACK_CHANNEL_NOTIFY = "${env.RELEASE_NAME}-release-management"
+    }
+
+    stages {
+        stage('Init') {
+
+            agent {
+                docker {
+                    label "${PRIMARY_NODE}"
+                    reuseNode true
+                    image "${sleImage}"
+                }
+            }
+
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: credentialsId, usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')]) {
+                        sh """
+                            make node_modules
+                        """
+                    }
+                    slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "#439fe0", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - Build starting, see #${env.SLACK_CHANNEL_ALERTS} for details")
+                    slackSend(channel: env.SLACK_CHANNEL_ALERTS, color: "#439fe0", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - Build starting")
+                }
+            }
+        }
+
+        stage('Build') {
+
+            agent {
+                docker {
+                    label "${PRIMARY_NODE}"
+                    reuseNode true
+                    args "-u root -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker --group-add 999"
+                    image "${sleImage}"
+                }
+            }
+
+            steps {
+                script {
+                    slackSend(channel: env.SLACK_CHANNEL_ALERTS, message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - Running release.sh")
+                    withCredentials([usernamePassword(credentialsId: credentialsId, usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')]) {
+                        dir('./release') {
+                            sh "docker login -u $ARTIFACTORY_USER -p $ARTIFACTORY_TOKEN artifactory.algol60.net/csm-docker/stable/"
+                            sh "pip install -r requirements.txt"
+                            sh "./build.sh"
+                        }
+                    }
+                }
+            }
+
+            post {
+                success {
+                    script {
+                        slackSend(channel: env.SLACK_CHANNEL_ALERTS, color: "good", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :white_check_mark: Built release distribution")
+                    }
+
+                }
+                unsuccessful {
+                    script {
+                        slackSend(channel: env.SLACK_CHANNEL_ALERTS, color: "danger", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :x: release.sh did not exit successfully")
+                    }
+                }
+            }
+        }
+
+        stage('Publish') {
+
+            agent {
+                docker {
+                    label "${PRIMARY_NODE}"
+                    reuseNode true
+                    args "-v /home/jenkins/.ssh:/home/jenkins/.ssh"
+                    image "${sleImage}"
+                }
+            }
+
+            steps {
+                script {
+                    slackSend(channel: env.SLACK_CHANNEL_ALERTS, message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - Publishing distributions")
+                }
+                rtUpload(
+                        serverId: 'ARTIFACTORY_ALGOL60',
+                        failNoOp: true,
+                        spec: """
+{
+    "files": [
+        {
+            "pattern": "release/*.tar.gz",
+            "target": "fawkes-releases/${stream}/${env.RELEASE_NAME}/${env.RELEASE_VERSION}/"
+        }
+    ]
+}
+""",
+                )
+            }
+
+            post {
+                success {
+                    script {
+                        env.RELEASE_BASEURL = "https://artifactory.algol60.net/artifactory/fawkes-releases/${stream}/${env.RELEASE_NAME}/${env.RELEASE_VERSION}"
+                        env.RELEASE_FILENAME = "${env.RELEASE_NAME}-${env.RELEASE_VERSION}.tar.gz"
+                        env.RELEASE_URL = "${env.RELEASE_BASEURL}/${env.RELEASE_FILENAME}"
+                        slackSend(channel: env.SLACK_CHANNEL_ALERTS, color: "good", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :white_check_mark: Release distribution at ${env.RELEASE_URL}")
+                    }
+                }
+                unsuccessful {
+                    script {
+                        slackSend(channel: env.SLACK_CHANNEL_ALERTS, color: "danger", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :x: Publishing distributions was not successful")
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "good", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :white_check_mark: Success!\n- Release distribution: <${env.RELEASE_URL}|${env.RELEASE_NAME}-${env.RELEASE_VERSION}.tar.gz>)")
+            }
+        }
+        failure {
+            script {
+                slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "danger", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :x: Build did not complete successfully")
+            }
+        }
+        aborted {
+            script {
+                slackSend(channel: env.SLACK_CHANNEL_ALERTS, color: "warning", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :warning: Job was aborted")
+                slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "warning", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :warning: Job was aborted")
+            }
+        }
+    }
+}

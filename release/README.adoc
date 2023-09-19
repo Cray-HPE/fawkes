@@ -1,0 +1,96 @@
+= Fawkes Release
+:toc:
+:toclevels: 3
+
+
+== Building
+
+To build a release tar ball, follow these steps.
+
+=== Prerequisites
+
+* `bundler` (Ruby)
+* `pip` (Python 3.6+)
+* `npm` (Node.JS)
+
+=== Steps
+
+. Setup the local repository.
+* Change into the root of the repository if not there already.
++
+[source,bash]
+----
+cd ../
+----
+* Install Node.JS modules for documentation generation.
++
+[source,bash]
+----
+make node_modules
+----
+* Install Ruby Gems for PDF generation.
++
+NOTE: This installs Gems into a local directory
++
+[source,bash]
+----
+make .bundle
+----
+* Install the Python requirements
++
+NOTE: It is recommended to do this with a virtualenv, these directions presume an environment is already activated.
++
+[source,bash]
+----
+pip install -r release/requirements.txt
+----
+. Install `yq` if it is not already present
++
+NOTE: For the official install directions, see link:https://github.com/mikefarah/yq[mikefarah/yq].
++
+* Using Go.
++
+[source,bash]
+----
+go install github.com/mikefarah/yq/v4@latest
+----
+* Using `brew` (macOS).
++
+[source,bash]
+----
+brew install yq
+----
+. Login to the Fawkes artifact endpoints
+Set Credentials
++
+NOTE: For help obtaining a token, see link:https://app.tango.us/app/workflow/Downloading-from-Private-Repos-in-Artifactory-eb4f579cdf9a4ea8988e402a18008b7b[Downloading from Private Repos in Artifactory].
++
+[source,bash]
+----
+ARTIFACTORY_USER=
+----
++
+[source,bash]
+----
+read -s ARTIFACTORY_TOKEN
+----
+. Log `docker` into Artifactory
++
+[source,bash]
+----
+docker login -u "$ARTIFACTORY_USER" -p "$ARTIFACTORY_TOKEN" artifactory.algol60.net/csm-docker/stable/
+----
+. Change into the `release` directory.
++
+[source,bash]
+----
+cd release
+----
+. Run the `build.sh` script.
++
+[source,bash]
+----
+export ARTIFACTORY_USER
+export ARTIFACTORY_TOKEN
+./build.sh
+----

@@ -1,0 +1,45 @@
+---
+github.com/cilium:
+  projects:
+    cilium-cli:
+      releases:
+        v0.15.7:
+          - cilium-linux-amd64.tar.gz
+    hubble:
+      releases:
+        v0.12.0:
+          - hubble-linux-amd64.tar.gz
+    tetragon:
+      releases:
+        v0.11.0:
+          - tetra-linux-amd64.tar.gz
+
+github.com/containerd:
+  projects:
+    containerd:
+      releases:
+        v1.5.16:
+          - cri-containerd-cni-1.5.16-linux-amd64.tar.gz
+
+github.com/etcd-io:
+  projects:
+    etcd:
+      releases:
+        v3.5.0:
+          - etcd-v3.5.0-linux-amd64.tar.gz
+
+github.com/kata-containers:
+  projects:
+    kata-containers:
+      releases:
+        3.2.0-rc0:
+          - kata-static-3.2.0-rc0-amd64.tar.xz
+
+github.com/vmware-tanzu:
+  projects:
+    velero:
+      releases:
+        v1.6.3:
+          - velero-v1.6.3-linux-amd64.tar.gz
+        v1.7.2:
+          - velero-v1.7.2-linux-amd64.tar.gz
