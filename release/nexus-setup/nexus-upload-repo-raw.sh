@@ -42,7 +42,7 @@ NEXUS_DIR="$(dirname "${BASH_SOURCE[0]}")"
 . "${NEXUS_DIR}/../lib/util.sh"
 requires parallel
 
-. "${NEXUS_DIR}/nexus-ready.sh"
+. "${NEXUS_DIR}/../nexus-setup/nexus-ready.sh"
 
 function upload-asset-raw() {
     local asset
@@ -60,8 +60,8 @@ function upload-asset-raw() {
         status=$?
         echo "INFO Uploaded: ${file} to ${repo}"
     else
-        echo "ERROR Failed to upload ${file} to ${repo}"
         status=$?
+        echo "ERROR Failed to upload ${file} to ${repo}"
     fi
     return "$status"
 }

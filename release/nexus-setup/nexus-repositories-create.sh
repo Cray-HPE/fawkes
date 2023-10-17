@@ -27,7 +27,7 @@ NEXUS_DIR="$(dirname "${BASH_SOURCE[0]}")"
 . "${NEXUS_DIR}/../lib/util.sh"
 requires yq
 
-. "${NEXUS_DIR}/nexus-ready.sh"
+. "${NEXUS_DIR}/../nexus-setup/nexus-ready.sh"
 
 WORKDIR="$(mktemp -d)"
 
@@ -129,7 +129,7 @@ while [[ $# -gt 0 ]]; do
                -d @-; then
                 echo >&2 "INFO Successfully created ${repo_format}/${repo_type} repository: ${repo_name}"
             else
-                status="$?"
+                status=$?
                 echo >&2 "ERROR Failed to create ${repo_format}/${repo_type} repository: ${repo_name}"; exit $status;
             fi
         elif [[ $found -eq 0 ]]; then
@@ -145,7 +145,7 @@ while [[ $# -gt 0 ]]; do
                 -d @-; then
                 echo >&2 "INFO Successfully updated ${repo_format}/${repo_type} repository: ${repo_name}"
             else
-                status="$?"
+                status=$?
                 echo >&2 "ERROR Failed to update ${repo_format}/${repo_type} repository: ${repo_name}"; exit $status;
             fi
         else

@@ -42,7 +42,7 @@ NEXUS_DIR="$(dirname "${BASH_SOURCE[0]}")"
 . "${NEXUS_DIR}/../lib/util.sh"
 requires parallel
 
-. "${NEXUS_DIR}/nexus-ready.sh"
+. "${NEXUS_DIR}/../nexus-setup/nexus-ready.sh"
 
 function upload-asset-yum() {
     local asset

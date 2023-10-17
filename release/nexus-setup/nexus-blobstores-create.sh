@@ -27,7 +27,7 @@ NEXUS_DIR="$(dirname "${BASH_SOURCE[0]}")"
 . "${NEXUS_DIR}/../lib/util.sh"
 requires yq
 
-. "${NEXUS_DIR}/nexus-ready.sh"
+. "${NEXUS_DIR}/../nexus-setup/nexus-ready.sh"
 
 WORKDIR="$(mktemp -d)"
 trap '{ rm -rf "$WORKDIR"; }' EXIT

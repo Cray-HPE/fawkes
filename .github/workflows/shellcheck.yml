@@ -38,3 +38,5 @@ jobs:
     
     - name: run shellcheck
       uses: ludeeus/action-shellcheck@2.0.0
+      env:
+        SHELLCHECK_OPTS: --source-path release/ --source-path release/lib -x
