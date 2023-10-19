@@ -1,0 +1,6 @@
+# Build
+.curl*
+.skopeo*
+dist/
+fawkes*
+fawkes*.tar*

@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # MIT License
 #
@@ -21,27 +22,50 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
+set -euo pipefail
 
-.PHONY: docs
-docs: clean node_modules .bundle
-	npx antora antora-playbook.yml
+if [[ $# -ne 2 ]]; then
+    echo >&2 "usage: ${0##*/} , two arguments required: SRC-DIRECTORY DEST-REPOSITORY "
+    exit 1
+fi
 
-.PHONY: clean
-clean:
-	rm -rf build
+path="$1"
+repo="$2"
+shift 2
 
-.PHONY: clean-deps
-clean-deps: clean
-	rm -rf .bundle
-	rm -rf node_modules
+if [[ ! -d "$path" ]]; then
+    echo >&2 "ERROR No such directory: $path"
+    exit 1
+fi
 
-.PHONY: docs-server
-docs-server: docs
-	./node_modules/.bin/http-server build/site
+NEXUS_DIR="$(dirname "${BASH_SOURCE[0]}")"
+. "${NEXUS_DIR}/../lib/util.sh"
+requires parallel
 
-node_modules:
-	npm i
+. "${NEXUS_DIR}/../nexus-setup/nexus-ready.sh"
 
-.bundle:
-	bundle config --local path .bundle/gems
-	bundle
+function upload-asset-yum() {
+    local asset
+    local file
+    local status
+    file="${1:-}"
+    asset="${file##"$path"}"
+
+    if curl -u "${NEXUS_USERNAME}:${NEXUS_PASSWORD}" -fvL \
+        --max-time "${CURL_MAX_TIME:-600}" \
+        --upload-file \
+        "$file" \
+        "${NEXUS_URL}/repository/${repo///}${asset}"; then
+        status=$?
+        echo "INFO Uploaded: ${file} to ${repo}"
+    else
+        status=$?
+        echo "ERROR Failed to upload ${file} to ${repo}" >&2
+    fi
+    return "$status"
+}
+
+export URL path repo
+export -f upload-asset-yum
+find "$path" -name '*.rpm' -type f \
+    | parallel -j 1 --bar --halt-on-error now,fail=1 -v upload-asset-yum {}

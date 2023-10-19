@@ -5,6 +5,18 @@
 
 version: 2
 updates:
+
+  - package-ecosystem: 'bundler'
+    # Look for `Gemfile` in the `root` directory
+    directory: '/'
+    # Check for updates once a week
+    schedule:
+      interval: 'weekly'
+    labels:
+      - "bundler"
+      - "dependencies"
+
+
   - package-ecosystem: "github-actions"
     # Look for `.github/workflows` in the `root` directory
     directory: "/"
@@ -25,12 +37,10 @@ updates:
       - "node.js"
       - "dependencies"
 
-  - package-ecosystem: 'bundler'
-    # Look for `Gemfile` in the `root` directory
-    directory: '/'
-    # Check for updates once a week
+  - package-ecosystem: "pip"
+    directory: "/release"
     schedule:
-      interval: 'weekly'
+      interval: "weekly"
     labels:
-      - "bundler"
+      - "pip"
       - "dependencies"

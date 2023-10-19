@@ -1,0 +1,147 @@
+---
+name: registry
+format: docker
+type: hosted
+online: true
+storage:
+  blobStoreName: fawkes
+  strictContentTypeValidation: true
+  writePolicy: ALLOW
+docker:
+  httpPort: 5000
+  v1Enabled: false
+  forceBasicAuth: false
+
+---
+format: helm
+name: charts
+type: hosted
+online: true
+storage:
+  blobStoreName: fawkes
+  strictContentTypeValidation: true
+  writePolicy: ALLOW
+
+---
+name: fawkes-0.0.0-third-party
+format: raw
+type: hosted
+online: true
+storage:
+  blobStoreName: fawkes
+  strictContentTypeValidation: false
+  writePolicy: ALLOW
+
+---
+name: fawkes-third-party
+format: raw
+online: true
+storage:
+  blobStoreName: fawkes
+  strictContentTypeValidation: false
+type: group
+group:
+  memberNames:
+    - fawkes-0.0.0-third-party
+
+---
+name: fawkes-0.0.0-images
+format: raw
+type: hosted
+online: true
+component:
+  proprietaryComponents: false
+storage:
+  strictContentTypeValidation: false
+  blobStoreName: fawkes
+  writePolicy: ALLOW
+raw:
+  contentDisposition: ATTACHMENT
+
+---
+name: fawkes-images
+format: raw
+online: true
+storage:
+  blobStoreName: fawkes
+  strictContentTypeValidation: false
+type: group
+group:
+  memberNames:
+    - fawkes-0.0.0-images
+
+---
+name: fawkes-0.0.0-noos
+format: yum
+type: hosted
+online: true
+storage:
+  blobStoreName: fawkes
+  strictContentTypeValidation: true
+  writePolicy: ALLOW
+yum:
+  repodataDepth: 0
+  deployPolicy: STRICT
+
+---
+name: fawkes-noos
+format: yum
+online: true
+storage:
+  blobStoreName: fawkes
+  strictContentTypeValidation: true
+type: group
+group:
+  memberNames:
+    - fawkes-0.0.0-noos
+
+---
+name: fawkes-0.0.0-sle-15sp4
+format: yum
+online: true
+type: hosted
+storage:
+  blobStoreName: fawkes
+  writePolicy: ALLOW
+  strictContentTypeValidation: true
+yum:
+  repodataDepth: 0
+  deployPolicy: STRICT
+
+---
+name: fawkes-sle-15sp4
+format: yum
+online: true
+storage:
+  blobStoreName: fawkes
+  strictContentTypeValidation: true
+type: group
+group:
+  memberNames:
+    - fawkes-0.0.0-sle-15sp4
+
+
+---
+name: fawkes-0.0.0-sle-15sp5
+format: yum
+type: hosted
+online: true
+storage:
+  blobStoreName: fawkes
+  strictContentTypeValidation: true
+  writePolicy: ALLOW
+yum:
+  repodataDepth: 0
+  deployPolicy: STRICT
+
+---
+name: fawkes-sle-15sp5
+format: yum
+online: true
+storage:
+  blobStoreName: fawkes
+  strictContentTypeValidation: true
+type: group
+group:
+  memberNames:
+    - fawkes-0.0.0-sle-15sp5

@@ -1,0 +1,54 @@
+---
+artifactory.algol60.net/csm-docker/stable:
+  images:
+    docker.io/weaveworks/weave-kube:
+      - 2.8.0
+      - 2.8.1
+    docker.io/weaveworks/weave-npc:
+      - 2.8.0
+      - 2.8.1
+    ghcr.io/k8snetworkplumbingwg/multus-cni:
+      - v3.9.1
+      - v3.9.3
+    k8s.gcr.io/coredns/coredns:
+      - v1.8.0
+      - v1.8.4
+    k8s.gcr.io/kube-apiserver:
+      - v1.21.12
+      - v1.22.13
+    k8s.gcr.io/kube-controller-manager:
+      - v1.21.12
+      - v1.22.13
+    k8s.gcr.io/kube-proxy:
+      - v1.21.12
+      - v1.22.13
+    k8s.gcr.io/kube-scheduler:
+      - v1.21.12
+      - v1.22.13
+    k8s.gcr.io/pause:
+      - 3.4.1
+      - 3.5
+    k8s.gcr.io/sig-storage/csi-attacher:
+      - v3.4.0
+    k8s.gcr.io/sig-storage/csi-node-driver-registrar:
+      - v2.4.0
+    k8s.gcr.io/sig-storage/csi-provisioner:
+      - v3.1.0
+    k8s.gcr.io/sig-storage/csi-resizer:
+      - v1.3.0
+      - v1.4.0
+    k8s.gcr.io/sig-storage/csi-snapshotter:
+      - v4.2.0
+    quay.io/cephcsi/cephcsi:
+      - v3.5.1
+      - v3.6.2
+    quay.io/cilium/cilium:
+      - v1.14.1
+    quay.io/cilium/hubble-relay:
+      - v1.14.1
+    quay.io/cilium/hubble-ui-backend:
+      - v0.12.0
+    quay.io/cilium/hubble-ui:
+      - v0.12.0
+    quay.io/cilium/operator-generic:
+      - v1.14.1

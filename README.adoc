@@ -1,4 +1,6 @@
 = Fawkes Documentation
+:toc:
+:toclevels: 3
 
 This repository builds HTML documentation for the Fawkes project using link:https://docs.antora.org/antora/latest/[Antora].
 
@@ -44,3 +46,8 @@ make docs-server
 ----
 
 The output will display URLs to find the generated content on `localhost`.
+
+== Release
+
+The release archive is created from tools and manifests inside the `release/` folder. See the xref:release/README.adoc[release
+readme] for more information.

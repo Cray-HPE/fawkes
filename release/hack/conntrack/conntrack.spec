@@ -1,7 +1,7 @@
 #
 # MIT License
 #
-# (C) Copyright 2023 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2022 Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -21,27 +21,15 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
-
-.PHONY: docs
-docs: clean node_modules .bundle
-	npx antora antora-playbook.yml
-
-.PHONY: clean
-clean:
-	rm -rf build
-
-.PHONY: clean-deps
-clean-deps: clean
-	rm -rf .bundle
-	rm -rf node_modules
-
-.PHONY: docs-server
-docs-server: docs
-	./node_modules/.bin/http-server build/site
-
-node_modules:
-	npm i
-
-.bundle:
-	bundle config --local path .bundle/gems
-	bundle
+Name:     conntrack
+Summary:  Dummy conntrack for satisfying kubernetes while also installing conntrack-tools.
+Version:  1
+Release:  1
+License:  none
+BuildArch: noarch
+Requires: conntrack-tools
+%description
+%prep
+%build
+%install
+%files

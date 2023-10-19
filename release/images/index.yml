@@ -1,0 +1,30 @@
+---
+artifactory.algol60.net/artifactory/fawkes-images/stable:
+  artifacts:
+    fawkes-live:
+      arches:
+        - x86_64
+      release: latest
+      mediums:
+        - iso
+
+    hypervisor:
+      arches:
+        - x86_64
+      release: latest
+      mediums:
+        - iso
+
+    kubernetes-vm:
+      arches:
+        - x86_64
+      release: latest
+      mediums:
+        - qcow2
+
+    management-vm:
+      arches:
+        - x86_64
+      release: latest
+      mediums:
+        - qcow2

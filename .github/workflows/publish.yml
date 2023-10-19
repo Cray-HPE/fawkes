@@ -21,8 +21,7 @@ jobs:
 
     - name: Install Ruby dependencies
       run: |
-        export PATH=~/bin:$PATH
-        bundle
+        make .bundle
 
     - name: Install Node.js
       uses: actions/setup-node@v3
@@ -30,7 +29,8 @@ jobs:
         node-version: 16
 
     - name: Install Antora and the Antora Lunr Extension
-      run: npm i
+      run: |
+        make node_modules
 
     - name: Generate Site
       env:

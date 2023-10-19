@@ -22,26 +22,9 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 
-.PHONY: docs
-docs: clean node_modules .bundle
-	npx antora antora-playbook.yml
-
 .PHONY: clean
 clean:
-	rm -rf build
-
-.PHONY: clean-deps
-clean-deps: clean
-	rm -rf .bundle
-	rm -rf node_modules
-
-.PHONY: docs-server
-docs-server: docs
-	./node_modules/.bin/http-server build/site
-
-node_modules:
-	npm i
-
-.bundle:
-	bundle config --local path .bundle/gems
-	bundle
+	rm -rf dist/
+	rm -rf .curl*
+	rm -rf .skopeo*
+	rm -rf vendor/
