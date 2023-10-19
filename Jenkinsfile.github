@@ -75,7 +75,7 @@ pipeline {
         RELEASE_VERSION = sh(script: ". release/lib/util.sh; version", returnStdout: true).trim()
         RELEASE_NAME = "fawkes"
         PRIMARY_NODE = "${env.NODE_NAME}"
-        SLACK_CHANNEL_ALERTS = "${env.RELAESE_NAME}-release-alerts"
+        SLACK_CHANNEL_ALERTS = "${env.RELEASE_NAME}-release-alerts"
         SLACK_CHANNEL_NOTIFY = "${env.RELEASE_NAME}-release-management"
     }
 
