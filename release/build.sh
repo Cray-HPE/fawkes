@@ -85,7 +85,13 @@ sed -i'' 's/0\.0\.0/'"$RELEASE_VERSION"'/g' "${BUILD_DIR}/nexus-repositories.yml
 mkdir -p "${BUILD_DIR}/security" && curl -sfSLRo "${BUILD_DIR}/security/hpe-signing-key.asc" "https://arti.hpc.amslabs.hpecorp.net/artifactory/dst-misc-stable-local/SigningKeys/HPE-SHASTA-RPM-PROD.asc"
 
 # Save quay.io/skopeo/stable images for use in upload.sh
-vendor-install-deps "$(basename "$BUILD_DIR")" "${BUILD_DIR}/vendor"
+if [ -n "${DIND_USER_HOME:-}" ]; then
+    mkdir -p "${DIND_USER_HOME}/vendor"
+    vendor-install-deps "${DIND_USER_HOME}/vendor"
+    rsync -rltDv "${DIND_USER_HOME}/vendor" "${BUILD_DIR}"
+else
+    vendor-install-deps "${BUILD_DIR}/vendor"
+fi
 
 # Generate the tar.
 rm -rf "${RELEASE_DIR}/dist" && mkdir "${RELEASE_DIR}/dist"

@@ -217,11 +217,9 @@ function vendor-install-deps() {
 
     creds="${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}"
 
-    release="$1"
-    destdir="$2"
+    destdir="$1"
 
     [[ -d "$destdir" ]] || mkdir -p "$destdir"
-
 
     if [[ "${include_skopeo:-1}" -eq 1 ]]; then
         docker run --rm -u "$(id -u):$(id -g)" "${podman_run_flags[@]}" \
@@ -230,7 +228,10 @@ function vendor-install-deps() {
             "$SKOPEO_IMAGE" \
             copy \
             ${creds:+--src-creds "${creds}"} \
-            "docker://${SKOPEO_IMAGE}" "docker-archive:/data/skopeo.tar:skopeo:${release}"
+            "docker://${SKOPEO_IMAGE}" "docker-archive:/data/skopeo.tar:$(basename "$SKOPEO_IMAGE")"
+        if [ ! -f "${destdir}/skopeo.tar" ]; then
+            return 1
+        fi
     fi
 
 }
