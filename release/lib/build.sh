@@ -34,6 +34,8 @@ if [[ "$yq_version" =~ '/^v3/' ]]; then
     exit 1
 fi
 
+export SKOPEO_IMAGE='artifactory.algol60.net/csm-docker/stable/quay.io/skopeo/stable:v1'
+
 if [ -z "${ARTIFACTORY_USER:-}" ] || [ -z "${ARTIFACTORY_TOKEN:-}" ]; then
     echo >&2 "Missing authentication information for image download. Please set ARTIFACTORY_USER and ARTIFACTORY_TOKEN environment variables."
     exit 1
@@ -192,7 +194,6 @@ export -f download-internal-with-sha
 function vendor-install-deps() {
     local include_skopeo=1
     local creds=''
-    local release
     local destdir
 
     while [[ $# -gt 2 ]]; do
@@ -217,11 +218,9 @@ function vendor-install-deps() {
 
     creds="${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}"
 
-    release="$1"
-    destdir="$2"
+    destdir="$1"
 
     [[ -d "$destdir" ]] || mkdir -p "$destdir"
-
 
     if [[ "${include_skopeo:-1}" -eq 1 ]]; then
         docker run --rm -u "$(id -u):$(id -g)" "${podman_run_flags[@]}" \
@@ -230,7 +229,10 @@ function vendor-install-deps() {
             "$SKOPEO_IMAGE" \
             copy \
             ${creds:+--src-creds "${creds}"} \
-            "docker://${SKOPEO_IMAGE}" "docker-archive:/data/skopeo.tar:skopeo:${release}"
+            "docker://${SKOPEO_IMAGE}" "docker-archive:/data/skopeo.tar:$(basename "$SKOPEO_IMAGE")"
+        if [ ! -f "${destdir}/skopeo.tar" ]; then
+            return 1
+        fi
     fi
 
 }

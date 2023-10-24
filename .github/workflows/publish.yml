@@ -21,6 +21,9 @@ jobs:
 
     - name: Install Ruby dependencies
       run: |
+        env
+        export PATH=$HOME/bin:$PATH
+        env
         make .bundle
 
     - name: Install Node.js

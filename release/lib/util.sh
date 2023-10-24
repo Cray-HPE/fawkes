@@ -24,7 +24,6 @@
 #
 set -euo pipefail
 
-export SKOPEO_IMAGE='artifactory.algol60.net/csm-docker/stable/quay.io/skopeo/stable:v1'
 
 declare -a podman_run_flags=(--network host)
 export podman_run_flags

@@ -184,9 +184,6 @@ declare -a vendor_images=()
 # Loads vendored images into podman's image storage to facilitate installation.
 # Product install scripts should call this function before using any functions
 # which use CRAY_NEXUS_SETUP_IMAGE or SKOPEO_IMAGE to interact with Nexus.
-#
-# Product install scripts should call `clean-install-deps` when finished to
-# remove images loaded into podman.
 function load-install-deps() {
 
     if [[ -f "${LIB_DIR}/../vendor/skopeo.tar" ]]; then

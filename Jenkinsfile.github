@@ -109,7 +109,7 @@ pipeline {
                 docker {
                     label "${PRIMARY_NODE}"
                     reuseNode true
-                    args "-u root -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker --group-add 999"
+                    args "--env DIND_USER_HOME=$HOME -u root -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker --group-add 999"
                     image "${sleImage}"
                 }
             }

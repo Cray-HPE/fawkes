@@ -43,3 +43,10 @@ github.com/vmware-tanzu:
           - velero-v1.6.3-linux-amd64.tar.gz
         v1.7.2:
           - velero-v1.7.2-linux-amd64.tar.gz
+
+github.com/gruntwork-io:
+  projects:
+    terragrunt:
+      releases:
+        v0.52.4:
+          - terragrunt_linux_amd64
