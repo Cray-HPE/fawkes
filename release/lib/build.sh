@@ -194,7 +194,6 @@ export -f download-internal-with-sha
 function vendor-install-deps() {
     local include_skopeo=1
     local creds=''
-    local release
     local destdir
 
     while [[ $# -gt 2 ]]; do
