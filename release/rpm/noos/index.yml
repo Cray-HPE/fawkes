@@ -23,4 +23,4 @@
 #
 artifactory.algol60.net/artifactory/fawkes-rpms/hpe/stable/noos:
   rpms:
-    - gru/gru-0.0.3-1.x86_64
+    - gru/gru-0.0.4-1.x86_64
