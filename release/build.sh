@@ -34,12 +34,11 @@ source "${RELEASE_DIR}/lib/build.sh"
 
 requires parallel tar xz
 
-set -x
 RELEASE_VERSION="${RELEASE_VERSION:-"$(version)"}"
 KEEP_BUILD_DIR="${KEEP_BUILD_DIR:-0}"
 BUILD_DIR="$(mktemp -d)"
 trap '[ -d "$BUILD_DIR" ] && [ "$KEEP_BUILD_DIR" -eq 0 ] && rm -rf "${BUILD_DIR}"' EXIT ERR INT
-set +x
+
 # Download binaries.
 "${RELEASE_DIR}/list-index.py" binaries | \
     parallel -j 75% --bar --halt-on-error now,fail=1 -v download-url-artifact {} "$BUILD_DIR/binaries"
