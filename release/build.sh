@@ -32,19 +32,29 @@ fi
 
 source "${RELEASE_DIR}/lib/build.sh"
 
-requires parallel tar xz
+requires parallel tar xz yq
 
-set -x
 RELEASE_VERSION="${RELEASE_VERSION:-"$(version)"}"
 KEEP_BUILD_DIR="${KEEP_BUILD_DIR:-0}"
 BUILD_DIR="$(mktemp -d)"
 trap '[ -d "$BUILD_DIR" ] && [ "$KEEP_BUILD_DIR" -eq 0 ] && rm -rf "${BUILD_DIR}"' EXIT ERR INT
-set +x
+
 # Download binaries.
 "${RELEASE_DIR}/list-index.py" binaries | \
     parallel -j 75% --bar --halt-on-error now,fail=1 -v download-url-artifact {} "$BUILD_DIR/binaries"
 
 # Download container images.
+k3s_release="$(yq '.release' "${RELEASE_DIR}/docker/k3s.yaml")"
+k3s_release_quoted="$(python3 -c "from urllib.parse import quote, sys; print(quote(sys.argv[1]))" "$k3s_release")"
+download-url-artifact "github.com/k3s-io/k3s/releases/download/${k3s_release_quoted}/k3s-images.txt" "$BUILD_DIR/"
+if IFS=$'\n' read -rd '' -a K3S_IMAGES; then :; fi <<< "$(cat "${BUILD_DIR}/k3s-images.txt")"
+for k3s_image in "${K3S_IMAGES[@]}"; do
+    registry="${k3s_image%%/*}"
+    image="$(echo "${k3s_image#*/}" | awk -F: '{print $1}')"
+    tag="$(echo "${k3s_image#*/}" | awk -F: '{print $NF}')"
+    yq -i '."'"${registry}"'".images."'"${image}"'" |= ["'"${tag}"'"]' "$RELEASE_DIR/docker/index.yml"
+done
+rm -f "${BUILD_DIR}/k3s-images.txt"
 "${RELEASE_DIR}/list-index.py" docker | \
     parallel -j 75% --bar --halt-on-error now,fail=1 -v cache-internal-image {} "$BUILD_DIR/docker/{}"
 

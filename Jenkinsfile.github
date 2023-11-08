@@ -36,12 +36,13 @@ def stream
 def stableToken = ~/v?\d+\.\d+\.\d+/
 def isStable = (env.TAG_NAME != null & env.TAG_NAME ==~ stableToken) ? true : false
 
+def notifyMgmt = true
+
 // Disable tag-less, or mismatching tag builds.
 def buildToken = ~/v?\d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)/
 if (env.TAG_NAME == null || !(env.TAG_NAME ==~ buildToken)) {
-    currentBuild.result = 'NOT_BUILT'
-    echo "Only tag builds matching the build token are built."
-    return
+    notifyMgmt = false
+//    return
 // Disable pr-merge builds; not used.
 } else if (env.BRANCH_NAME ==~ ~"^PR-\\d+") {
     currentBuild.result = 'NOT_BUILT'
@@ -97,7 +98,9 @@ pipeline {
                             make node_modules
                         """
                     }
-                    slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "#439fe0", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - Build starting, see #${env.SLACK_CHANNEL_ALERTS} for details")
+                    if (notifyMgmt) {
+                        slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "#439fe0", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - Build starting, see #${env.SLACK_CHANNEL_ALERTS} for details")
+                    }
                     slackSend(channel: env.SLACK_CHANNEL_ALERTS, color: "#439fe0", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - Build starting")
                 }
             }
@@ -194,18 +197,24 @@ pipeline {
     post {
         success {
             script {
-                slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "good", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :white_check_mark: Success!\n- Release distribution: <${env.RELEASE_URL}|${env.RELEASE_NAME}-${env.RELEASE_VERSION}.tar.gz>)")
+                if (notifyMgmt) {
+                    slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "good", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :white_check_mark: Success!\n- Release distribution: <${env.RELEASE_URL}|${env.RELEASE_NAME}-${env.RELEASE_VERSION}.tar.gz>)")
+                }
             }
         }
         failure {
             script {
-                slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "danger", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :x: Build did not complete successfully")
+                if (notifyMgmt) {
+                    slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "danger", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :x: Build did not complete successfully")
+                }
             }
         }
         aborted {
             script {
                 slackSend(channel: env.SLACK_CHANNEL_ALERTS, color: "warning", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :warning: Job was aborted")
-                slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "warning", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :warning: Job was aborted")
+                if (notifyMgmt) {
+                    slackSend(channel: env.SLACK_CHANNEL_NOTIFY, color: "warning", message: "<${env.BUILD_URL}|Fawkes ${env.RELEASE_VERSION}> - :warning: Job was aborted")
+                }
             }
         }
     }
