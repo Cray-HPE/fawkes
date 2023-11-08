@@ -48,10 +48,10 @@ k3s_release="$(yq '.release' "${RELEASE_DIR}/docker/k3s.yaml")"
 k3s_release_quoted="$(python3 -c "from urllib.parse import quote, sys; print(quote(sys.argv[1]))" "$k3s_release")"
 download-url-artifact "github.com/k3s-io/k3s/releases/download/${k3s_release_quoted}/k3s-images.txt" "$BUILD_DIR/"
 if IFS=$'\n' read -rd '' -a K3S_IMAGES; then :; fi <<< "$(cat "${BUILD_DIR}/k3s-images.txt")"
-for image in "${K3S_IMAGES[@]}"; do
-    registry="${image%%/*}"
-    image="$(echo "${image#*/}" | awk -F: '{print $1}')"
-    tag="$(echo "${image#*/}" | awk -F: '{print $NF}')"
+for k3s_image in "${K3S_IMAGES[@]}"; do
+    registry="${k3s_image%%/*}"
+    image="$(echo "${k3s_image#*/}" | awk -F: '{print $1}')"
+    tag="$(echo "${k3s_image#*/}" | awk -F: '{print $NF}')"
     yq -i '."'"${registry}"'".images."'"${image}"'" |= ["'"${tag}"'"]' "$RELEASE_DIR/docker/index.yml"
 done
 rm -f "${BUILD_DIR}/k3s-images.txt"
