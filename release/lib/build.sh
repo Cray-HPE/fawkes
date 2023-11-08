@@ -96,7 +96,7 @@ export -f cache-internal-image
 # Downloads an artifact at URL and writes it into DIRECTORY.
 function download-url-artifact {
 
-    local arch
+    local arch=''
     local artifact
     local url
     local destdir
