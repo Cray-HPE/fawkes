@@ -1,5 +1,13 @@
 # Fawkes
 
+## Building a Fawkes Archive
+
+To build a Fawkes archive, change into the `release/` directory and invoke `./build.sh`.
+
+Building a tarball requires setting environment variables for https://artifactory.algol60.net.
+
+> ***NOTE*** This does not support building on arm64/aarch64 machines.
+
 ## Uploading to Nexus
 
 ```bash
@@ -10,7 +18,7 @@
 
 The `upload.sh` script will use the `NEXUS_USERNAME` and `NEXUS_PASSWORD` environment variables if they are set.
 
-If environment varialbes are not set, then by default the script will attempt to resolve credentials from a Kubernetes
+If environment variables are not set, then by default the script will attempt to resolve credentials from a Kubernetes
 secret called `nexus-admin-credential`. That Kubernetes secret should have the following information:
 
 ```yaml

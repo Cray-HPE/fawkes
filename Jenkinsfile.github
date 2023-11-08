@@ -41,8 +41,6 @@ def notifyMgmt = true
 // Disable tag-less, or mismatching tag builds.
 def buildToken = ~/v?\d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)/
 if (env.TAG_NAME == null || !(env.TAG_NAME ==~ buildToken)) {
-    currentBuild.result = 'NOT_BUILT'
-    echo "Only tag builds matching the build token are built."
     notifyMgmt = false
 //    return
 // Disable pr-merge builds; not used.
