@@ -27,7 +27,14 @@ set -euo pipefail
 : "${NEXUS_URL:="http://packages/nexus"}"
 : "${NEXUS_REGISTRY:="registry:5000"}"
 
+# If NEXUS_URL is localhost, then assume our registry is as well. Localhost should only
+# be used in a bootstrapping context.
+if [[ "$NEXUS_URL" =~ "localhost" ]]; then
+    NEXUS_REGISTRY=localhost:${NEXUS_REGISTRY##*:}
+fi
+
 export NEXUS_URL
+export NEXUS_REGISTRY
 
 LIB_DIR="$(dirname "${BASH_SOURCE[0]}")"
 source "${LIB_DIR}/util.sh"
