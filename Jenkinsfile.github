@@ -42,9 +42,9 @@ def notifyMgmt = true
 def buildToken = ~/v?\d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)/
 if (env.TAG_NAME == null || !(env.TAG_NAME ==~ buildToken)) {
     notifyMgmt = false
-//    return
+}
 // Disable pr-merge builds; not used.
-} else if (env.BRANCH_NAME ==~ ~"^PR-\\d+") {
+if (env.BRANCH_NAME ==~ ~"^PR-\\d+") {
     currentBuild.result = 'NOT_BUILT'
     echo "Pull-Request builds are skipped."
     return
