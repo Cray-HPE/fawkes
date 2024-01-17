@@ -23,4 +23,4 @@
 #
 artifactory.algol60.net/artifactory/fawkes-rpms/hpe/stable/sle-15sp4:
   rpms:
-    - crucible/crucible-0.0.16-1.x86_64
+    - crucible/crucible-0.0.17-1.x86_64
